@@ -188,8 +188,9 @@ async function execute(interaction) {
         };
 
         const clientId = interaction.client.user.id;
-        // In the initial guide, the session ID 0 was used, resulting in error 40106 from Discord. The session ID is now set to the Discord user ID, which should resolve the issue.
-        const url = `https://discord.com/api/v9/applications/${clientId}/users/${discordId}/identities/${discordId}/profile`;
+        // Id 0 causing the 40106 error from discord seems to be no longer true
+		// using it with ${discordId} causes the error APPLICATION_IDENTITY_PROVIDER_USER_ID_MISMATCH, changing it to 0 worked on my end.
+        const url = `https://discord.com/api/v9/applications/${clientId}/users/${discordId}/identities/0/profile`;
         // TODO: Add confirmation with interactation buttons before sending the PATCH request to Discord API
         const stats_1 = dynamicData.find(item => item.name === "stats_1")?.value || "Stats N/A";
         const stats_2 = dynamicData.find(item => item.name === "stats_2")?.value || "Stats N/A";
