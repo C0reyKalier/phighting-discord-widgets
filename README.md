@@ -8,11 +8,11 @@ A project implementing your (unofficial) PHIGHTING! stats to your Discord profil
 
 ## Planned features & TODO:
 
-- More comprehensive and friendly guide to set up **[PRIORITY]**
-- Polished UX for the Discord Bot **[PRIORITY]**
-- Standalone (Win32) program for Windows
-- Add Android support via Termux using dialog and curl
-- Support for the second type of the Widget (4 featured images) **[PRIORITY]**
+- [ ] More comprehensive and friendly guide to set up **[PRIORITY]**
+- [ ] Polished UX for the Discord Bot **[PRIORITY]**
+- [ ] Standalone (Win32) program for Windows
+- [ ] Add Android support via Termux using dialog and curl
+- [ ] Support for the second type of the Widget (4 featured images) **[PRIORITY]**
 
 ## Requirements
 
@@ -86,6 +86,7 @@ npm install
 Once done, head to the **Developer Portal** → OAuth2 page and add a redirect "https://discord.com". This will allow you to be able to authorize the app to your account.
 
 After confirming the redirect URL has been set to "https://discord.com", get your bot token in the same **Developer Portal page**:
+
 - **Application ID** → General Information page
 - **Bot Token** → Bot page → Reset Token
 
