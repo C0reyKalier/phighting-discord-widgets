@@ -136,7 +136,7 @@ The bot logs `Bot ready! Logged in as BotName#XXXX` when ready.
 
 ---
 
-## Commands
+## Commands Preview
 
 | Command | Description |
 |---|---|
