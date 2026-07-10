@@ -3,7 +3,7 @@ const { EmbedBuilder } = require('discord.js');
 require('dotenv').config({ path: 'assets.env' });
 
 const data = new SlashCommandBuilder()
-	.setName('stats_widget')
+	.setName('legacy_stats_widget')
 	.setDescription('Customize your widget for your profile')
 	.addSubcommand((subcommand) => 
         subcommand
@@ -255,7 +255,7 @@ async function execute(interaction) {
                 if (stat === "Best Damage") {
                     formattedStatData += " DMG";
                 } else if (stat === "Best Heals") {
-                    formattedStatData += " Heals";
+                    formattedStatData += " Healed";
                 } else if (stat === "Hours Played") {
                     formattedStatData += " hours";
                 } else if (stat === "Daily Streak") {
