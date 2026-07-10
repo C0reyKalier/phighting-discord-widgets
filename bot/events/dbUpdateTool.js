@@ -40,6 +40,31 @@ module.exports = {
                 return;
             }
             
+            // Check if widget_layout table exists
+            const widgetLayoutTableExists = db.prepare(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='widget_layout'"
+            ).get();
+
+            if (!widgetLayoutTableExists) {
+                // Create widget_layout table
+                db.exec(`
+                    CREATE TABLE widget_layout (
+                        discord_id TEXT PRIMARY KEY,
+                        stats_1 TEXT,
+                        stats_2 TEXT,
+                        stats_3 TEXT,
+                        stats_4 TEXT,
+                        stats_5 TEXT,
+                        stats_6 TEXT,
+                        featured_1 TEXT,
+                        featured_2 TEXT,
+                        featured_3 TEXT,
+                        featured_4 TEXT,
+                        chosen_style TEXT
+                    );
+                `);
+            }
+
             // Check if user_data table exists
             const userDataTableExists = db.prepare(
                 "SELECT name FROM sqlite_master WHERE type='table' AND name='user_data'"
