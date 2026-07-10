@@ -60,7 +60,6 @@ module.exports = {
                         featured_2 TEXT,
                         featured_3 TEXT,
                         featured_4 TEXT,
-                        chosen_style TEXT
                     );
                 `);
             }
@@ -75,6 +74,7 @@ module.exports = {
                 db.exec(`
                     CREATE TABLE user_data (
                         discord_id TEXT PRIMARY KEY,
+                        phighter_header TEXT,
                         honorary_title TEXT,
                         level INTEGER,
                         scrimming_status TEXT,
@@ -105,6 +105,7 @@ module.exports = {
             if (currentVersion < 3) {
                 db.exec(`
                     ALTER TABLE user_data ADD COLUMN winrate TEXT;
+                    ALTER TABLE user_data ADD COLUMN brokercoins_donated INTEGER; 
                 `);
                 currentVersion = 3;
                 db.prepare("UPDATE metadata SET value = ? WHERE key = 'version'").run('3');
