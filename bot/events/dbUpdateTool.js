@@ -59,7 +59,7 @@ module.exports = {
                         featured_1 TEXT,
                         featured_2 TEXT,
                         featured_3 TEXT,
-                        featured_4 TEXT,
+                        featured_4 TEXT
                     );
                 `);
             }
