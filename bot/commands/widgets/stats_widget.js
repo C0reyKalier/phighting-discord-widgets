@@ -36,7 +36,6 @@ async function execute(interaction) {
 		
 		// Format: [Display Name] (@[username])
 		fullNameValue = `${robloxUser.displayName} (@${robloxUser.name})`;
-        console.log(`Fetched Roblox data for Discord ID ${discordId}: ${fullNameValue}`);
 
 	} catch (error) {
 		console.error('Roblox Sync Error:', error);
@@ -50,7 +49,6 @@ async function execute(interaction) {
 
 		// Get widget layout for the user executing the command
 		const layoutRow = db.prepare('SELECT * FROM widget_layout WHERE discord_id = ?').get(discordId);
-        console.log(`Fetched widget layout for Discord ID ${discordId}:`, layoutRow);
 		if (!layoutRow) {
 			db.close();
 			return interaction.editReply('No widget layout found for your profile. Please configure your widget first.');
@@ -58,7 +56,6 @@ async function execute(interaction) {
 
 		// Get user data
 		const userData = db.prepare('SELECT * FROM user_data WHERE discord_id = ?').get(discordId);
-        console.log(`Fetched user data for Discord ID ${discordId}:`, userData);
 		if (!userData) {
 			db.close();
 			return interaction.editReply('No user data found in database.');
@@ -114,7 +111,6 @@ async function execute(interaction) {
 				statsDisplay[`stats_${i}_data`] = statValue;
 			}
 		}
-        console.log(`Prepared stats display for Discord ID ${discordId}:`, statsDisplay);
 
 		// Get phighter header image from user data
 		let imgUrl = null;
@@ -138,7 +134,6 @@ async function execute(interaction) {
 				'Coil': 'ASSETS_COIL'
 			};
 			imgUrl = process.env[phighterMap[phighterHeader]];
-            console.log(`Using phighter header image for ${phighterHeader}: ${imgUrl}`);
 		}
 
 		// Build embed preview
