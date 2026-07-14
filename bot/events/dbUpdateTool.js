@@ -94,6 +94,7 @@ module.exports = {
                 db.exec(`
                     ALTER TABLE user_data ADD COLUMN total_kills INTEGER;
                     ALTER TABLE user_data ADD COLUMN total_deaths INTEGER;
+                    ALTER TABLE user_data ADD COLUMN total_assists INTEGER;
                     ALTER TABLE user_data ADD COLUMN total_heals INTEGER;
                     ALTER TABLE user_data ADD COLUMN best_winstreak INTEGER;
                     ALTER TABLE user_data ADD COLUMN best_dailystreak INTEGER;
