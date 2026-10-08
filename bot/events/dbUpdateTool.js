@@ -89,11 +89,16 @@ module.exports = {
                 db.prepare("UPDATE metadata SET value = ? WHERE key = 'version'").run('1');
             }
 
+            const masteryDataTableExists = db.prepare(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='user_mastery_data'"
+            ).get();
+
             if (!userMasteryDataTableExists) {
                 // Create mastery data table
                 db.exec(`
                     CREATE TABLE user_mastery_data (
                     discord_id TEXT PRIMARY KEY,
+
                     )
                 `);
             }
