@@ -89,7 +89,7 @@ module.exports = {
                 db.prepare("UPDATE metadata SET value = ? WHERE key = 'version'").run('1');
             }
 
-            const masteryDataTableExists = db.prepare(
+            const userMasteryDataTableExists = db.prepare(
                 "SELECT name FROM sqlite_master WHERE type='table' AND name='user_mastery_data'"
             ).get();
 
@@ -98,7 +98,21 @@ module.exports = {
                 db.exec(`
                     CREATE TABLE user_mastery_data (
                     discord_id TEXT PRIMARY KEY,
-
+                    sword_mastery_level INTERGER,
+                    rocket_mastery_level INTERGER,
+                    medkit_mastery_level INTERGER,
+                    skateboard_mastery_level INTERGER,
+                    slingshot_mastery_level INTERGER,
+                    boombox_mastery_level INTERGER,
+                    biograft_mastery_level INTERGER,
+                    hyperlaser_mastery_level INTERGER,
+                    subspace_mastery_level INTERGER,
+                    katana_mastery_level INTERGER,
+                    shutiken_mastery_level INTERGER,
+                    vinestaff_mastery_level INTERGER,
+                    banhammer_mastery_level INTERGER,
+                    scythe_mastery_level INTERGER,
+                    coil_mastery_level INTERGER,
                     )
                 `);
             }

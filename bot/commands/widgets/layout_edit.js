@@ -67,44 +67,44 @@ async function execute(interaction) {
 					.setLabel('Sword')
 					.setValue('Sword'),
 				new StringSelectMenuOptionBuilder()
-					.setLabel('Skateboard')
-					.setValue('Skateboard'),
-				new StringSelectMenuOptionBuilder()
-					.setLabel('Biograft')
-					.setValue('Biograft'),
-				new StringSelectMenuOptionBuilder()
-					.setLabel('Katana')
-					.setValue('Katana'),
-				new StringSelectMenuOptionBuilder()
-					.setLabel('Ban Hammer')
-					.setValue('Ban Hammer'),
-				new StringSelectMenuOptionBuilder()
 					.setLabel('Rocket')
 					.setValue('Rocket'),
-				new StringSelectMenuOptionBuilder()
-					.setLabel('Slingshot')
-					.setValue('Slingshot'),
-				new StringSelectMenuOptionBuilder()
-					.setLabel('Hyperlaser')
-					.setValue('Hyperlaser'),
-				new StringSelectMenuOptionBuilder()
-					.setLabel('Shuriken')
-					.setValue('Shuriken'),
-				new StringSelectMenuOptionBuilder()
-					.setLabel('Scythe')
-					.setValue('Scythe'),
 				new StringSelectMenuOptionBuilder()
 					.setLabel('Medkit')
 					.setValue('Medkit'),
 				new StringSelectMenuOptionBuilder()
+					.setLabel('Skateboard')
+					.setValue('Skateboard'),
+				new StringSelectMenuOptionBuilder()
+					.setLabel('Slingshot')
+					.setValue('Slingshot'),
+				new StringSelectMenuOptionBuilder()
 					.setLabel('Boombox')
 					.setValue('Boombox'),
+				new StringSelectMenuOptionBuilder()
+					.setLabel('Biograft')
+					.setValue('Biograft'),
+				new StringSelectMenuOptionBuilder()
+					.setLabel('Hyperlaser')
+					.setValue('Hyperlaser'),
 				new StringSelectMenuOptionBuilder()
 					.setLabel('Subspace')
 					.setValue('Subspace'),
 				new StringSelectMenuOptionBuilder()
+					.setLabel('Katana')
+					.setValue('Katana'),
+				new StringSelectMenuOptionBuilder()
+					.setLabel('Shuriken')
+					.setValue('Shuriken'),
+				new StringSelectMenuOptionBuilder()
 					.setLabel('Vine Staff')
 					.setValue('Vine Staff'),
+				new StringSelectMenuOptionBuilder()
+					.setLabel('Ban Hammer')
+					.setValue('Ban Hammer'),
+				new StringSelectMenuOptionBuilder()
+					.setLabel('Scythe')
+					.setValue('Scythe'),
 				new StringSelectMenuOptionBuilder()
 					.setLabel('Coil')
 					.setValue('Coil')
