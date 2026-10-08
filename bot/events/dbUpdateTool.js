@@ -88,6 +88,15 @@ module.exports = {
                 currentVersion = 1;
                 db.prepare("UPDATE metadata SET value = ? WHERE key = 'version'").run('1');
             }
+
+            if (!userMasteryDataTableExists) {
+                // Create mastery data table
+                db.exec(`
+                    CREATE TABLE user_mastery_data (
+                    discord_id TEXT PRIMARY KEY,
+                    )
+                `);
+            }
             
             // Apply incremental schema updates
             if (currentVersion < 2) {
