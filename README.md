@@ -6,6 +6,12 @@ A project implementing your (unofficial) PHIGHTING! stats to your Discord profil
 
 ---
 
+> [!NOTE]
+> Discord has [ended the Widgets experiment back in July 2026](https://web.archive.org/web/20260728010848/https://support-dev.discord.com/hc/en-us/articles/42261641635351-Game-Stats-Widget-Experiment). New Widgets cannot be made anymore, but existing Widgets that were created before it can still be modified and edited.
+> Issues regarding widget creation will not be supported.
+
+---
+
 ## Planned features & TODO:
 
 - [x] More comprehensive and friendly guide to set up **[PRIORITY]**
