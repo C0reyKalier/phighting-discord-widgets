@@ -2,7 +2,8 @@ const path = require('path');
 const Database = require('better-sqlite3');
 const { Events } = require('discord.js');
 
-const LATEST_DB_VERSION = 3;
+// DO NOT EDIT! This serves as a versioning system for the database schema. Only increment this number when you know what you are doing.
+const LATEST_DB_VERSION = 1;
 
 module.exports = {
 	name: Events.ClientReady,
@@ -13,7 +14,7 @@ module.exports = {
         try {
             const db = new Database(dbPath);
             
-            // Check if metadata table exists, if not create it
+            // Check if metadata table exists
             const metadataTableExists = db.prepare(
                 "SELECT name FROM sqlite_master WHERE type='table' AND name='metadata'"
             ).get();
@@ -21,17 +22,16 @@ module.exports = {
             if (!metadataTableExists) {
                 db.exec(`
                     CREATE TABLE metadata (
-                        key TEXT PRIMARY KEY,
-                        value TEXT
+                        version INTEGER PRIMARY KEY
                     );
                 `);
-                db.prepare("INSERT INTO metadata (key, value) VALUES (?, ?)").run('version', '0');
+                db.prepare("INSERT INTO metadata (version) VALUES (?)").run(0);
             }
             
             let currentVersion = 0;
-            const versionRow = db.prepare("SELECT value FROM metadata WHERE key = 'version'").get();
+            const versionRow = db.prepare("SELECT version FROM metadata").get();
             if (versionRow) {
-                currentVersion = parseInt(versionRow.value);
+                currentVersion = parseInt(versionRow.version, 10);
             }
             
             if (currentVersion === LATEST_DB_VERSION) {
@@ -49,13 +49,19 @@ module.exports = {
                 // Create widget_layout table
                 db.exec(`
                     CREATE TABLE widget_layout (
-                        discord_id TEXT PRIMARY KEY,
+                        discord_id INTEGER PRIMARY KEY,
                         stats_1 TEXT,
+                        stats_1_icon TEXT,
                         stats_2 TEXT,
+                        stats_2_icon TEXT,
                         stats_3 TEXT,
+                        stats_3_icon TEXT,
                         stats_4 TEXT,
+                        stats_4_icon TEXT,
                         stats_5 TEXT,
+                        stats_5_icon TEXT,
                         stats_6 TEXT,
+                        stats_6_icon TEXT,
                         featured_1 TEXT,
                         featured_2 TEXT,
                         featured_3 TEXT,
@@ -64,81 +70,92 @@ module.exports = {
                 `);
             }
 
-            // Check if user_data table exists
-            const userDataTableExists = db.prepare(
-                "SELECT name FROM sqlite_master WHERE type='table' AND name='user_data'"
+            // Check if user_stats table exists
+            const userStatsTableExists = db.prepare(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='user_stats'"
             ).get();
             
-            if (!userDataTableExists) {
-                // Create user_data table
+            if (!userStatsTableExists) {
+                // Create user_stats table
                 db.exec(`
-                    CREATE TABLE user_data (
-                        discord_id TEXT PRIMARY KEY,
-                        phighter_header TEXT,
-                        honorary_title TEXT,
+                    CREATE TABLE user_stats (
+                        discord_id INTEGER PRIMARY KEY,
+                        phighter_heroimg TEXT,
+                        title TEXT,
                         level INTEGER,
-                        scrimming_status TEXT,
+                        comp_status TEXT,
                         maining TEXT,
-                        hours_played INTEGER,
+                        brokercoins_donated INTEGER,
+                        playtime_hours INTEGER,
+                        total_kills INTEGER,
+                        total_deaths INTEGER,
+                        total_assists INTEGER,
+                        total_wins INTEGER,
+                        win_rate DECIMAL(5, 4),
+                        total_dmg INTEGER,
+                        total_heals INTEGER,
+                        highest_win_streak INTEGER,
+                        highest_daily_streak INTEGER,
+                        endorsements_received INTEGER,
+                        endorsements_given INTEGER,
                         best_kda TEXT,
                         best_dmg INTEGER,
                         best_heals INTEGER
                     );
                 `);
                 currentVersion = 1;
-                db.prepare("UPDATE metadata SET value = ? WHERE key = 'version'").run('1');
+                db.prepare("UPDATE metadata SET version = ?").run('1');
             }
 
-            const userMasteryDataTableExists = db.prepare(
-                "SELECT name FROM sqlite_master WHERE type='table' AND name='user_mastery_data'"
-            ).get();
+            const phighters = [
+                'sword', 'rocket', 'medkit', 'skateboard', 'slingshot', 'boombox',
+                'biograft', 'hyperlaser', 'subspace', 'katana', 'shuriken',
+                'vine_staff', 'ban_hammer', 'scythe', 'coil'
+            ];
+            const healerPhighters = new Set(['medkit', 'vine_staff', 'coil']);
 
-            if (!userMasteryDataTableExists) {
-                // Create mastery data table
-                db.exec(`
-                    CREATE TABLE user_mastery_data (
-                    discord_id TEXT PRIMARY KEY,
-                    sword_mastery_level INTERGER,
-                    rocket_mastery_level INTERGER,
-                    medkit_mastery_level INTERGER,
-                    skateboard_mastery_level INTERGER,
-                    slingshot_mastery_level INTERGER,
-                    boombox_mastery_level INTERGER,
-                    biograft_mastery_level INTERGER,
-                    hyperlaser_mastery_level INTERGER,
-                    subspace_mastery_level INTERGER,
-                    katana_mastery_level INTERGER,
-                    shutiken_mastery_level INTERGER,
-                    vinestaff_mastery_level INTERGER,
-                    banhammer_mastery_level INTERGER,
-                    scythe_mastery_level INTERGER,
-                    coil_mastery_level INTERGER,
-                    )
-                `);
+            for (const phighter of phighters) {
+                const tableName = `${phighter}_stats`;
+                const tableExists = db.prepare(
+                    "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?"
+                ).get(tableName);
+
+                if (!tableExists) {
+                    const columns = [
+                        'discord_id INTEGER PRIMARY KEY',
+                        'mastery_level INTEGER',
+                        'playtime_hours INTEGER',
+                        'games INTERGER',
+                        'win_rate DECIMAL(5, 4)',
+                        'wins INTEGER',
+                        'kills INTEGER',
+                        'deaths INTEGER',
+                        'assists INTEGER',
+                        'damage INTEGER',
+                        'points INTEGER',
+                        'best_kda TEXT',
+                        'best_dmg INTEGER'
+                    ];
+
+                    if (healerPhighters.has(phighter)) {
+                        columns.push(
+                            'healing INTEGER',
+                            'best_heals INTEGER'
+                        );
+                    }
+
+                    db.exec(`CREATE TABLE "${tableName}" (${columns.join(', ')})`);
+                }
             }
             
             // Apply incremental schema updates
-            if (currentVersion < 2) {
-                db.exec(`
-                    ALTER TABLE user_data ADD COLUMN total_kills INTEGER;
-                    ALTER TABLE user_data ADD COLUMN total_deaths INTEGER;
-                    ALTER TABLE user_data ADD COLUMN total_assists INTEGER;
-                    ALTER TABLE user_data ADD COLUMN total_heals INTEGER;
-                    ALTER TABLE user_data ADD COLUMN best_winstreak INTEGER;
-                    ALTER TABLE user_data ADD COLUMN best_dailystreak INTEGER;
-                `);
-                currentVersion = 2;
-                db.prepare("UPDATE metadata SET value = ? WHERE key = 'version'").run('2');
-            }
-            
-            if (currentVersion < 3) {
-                db.exec(`
-                    ALTER TABLE user_data ADD COLUMN winrate TEXT;
-                    ALTER TABLE user_data ADD COLUMN brokercoins_donated INTEGER; 
-                `);
-                currentVersion = 3;
-                db.prepare("UPDATE metadata SET value = ? WHERE key = 'version'").run('3');
-            }
+            // if (currentVersion < 2) {
+            //    db.exec(`
+            //        ALTER TABLE table_name ADD COLUMN column_name TYPE;
+            //    `);
+            //    currentVersion = 2;
+            //    db.prepare("UPDATE metadata SET version = ?").run('2');
+            // }
             
             db.close();
             console.log('Database initialized and schema updated to version', currentVersion);
