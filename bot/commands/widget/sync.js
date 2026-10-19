@@ -43,7 +43,7 @@ module.exports = {
 				return interaction.editReply('No widget layout found for your profile. Please configure your widget first.');
 			}
 
-			const userData = db.prepare('SELECT * FROM user_data WHERE discord_id = ?').get(discordId);
+			const userData = db.prepare('SELECT * FROM user_stats WHERE discord_id = ?').get(discordId);
 			db.close();
 			if (!userData) return interaction.editReply('No user data found in database.');
 
