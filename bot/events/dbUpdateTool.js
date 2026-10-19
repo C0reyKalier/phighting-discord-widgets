@@ -86,7 +86,7 @@ module.exports = {
                         comp_status TEXT,
                         maining TEXT,
                         brokercoins_donated INTEGER,
-                        playtime_hours INTEGER,
+                        total_playtime_hours INTEGER,
                         total_kills INTEGER,
                         total_deaths INTEGER,
                         total_assists INTEGER,
