@@ -1,6 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 require('dotenv').config();
+require('dotenv').config({ path: path.join(__dirname, 'assets.env') });
 const { Client, Collection, Events, GatewayIntentBits, MessageFlags } = require('discord.js');
 
 const client = new Client({
