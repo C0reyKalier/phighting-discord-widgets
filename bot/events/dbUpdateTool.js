@@ -81,9 +81,11 @@ module.exports = {
                     CREATE TABLE user_stats (
                         discord_id INTEGER PRIMARY KEY,
                         phighter_heroimg TEXT,
+                        heroimg_background TEXT,
                         title TEXT,
                         level INTEGER,
                         comp_status TEXT,
+                        joindate TEXT,
                         maining TEXT,
                         brokercoins_donated INTEGER,
                         total_playtime_hours INTEGER,
