@@ -4,61 +4,123 @@ const Database = require('better-sqlite3');
 
 const normalizeDbKey = (value) => String(value ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
 const columnToDisplayMap = {
-	maining: 'Maining', best_kda: 'Best K/D/A', best_dmg: 'Best Damage', best_heals: 'Best Heals',
-	hours_played: 'Hours Played', total_playtime_hours: 'Hours Played', highest_daily_streak: 'Daily Streak',
-	brokercoins_donated: 'Brokercoins Donated', highest_win_streak: 'Best Win Streak', total_kills: 'Total Kills',
-	total_deaths: 'Total Deaths', total_assists: 'Total Assists', total_wins: 'Total Wins', total_dmg: 'Total Damage',
-	total_heals: 'Total Heals', win_rate: 'Win Rate', comp_status: 'Competitive Status',
-	endorsements_received: 'Endorsements Received', endorsements_given: 'Endorsements Given',
-	mastery_level: 'Mastery Level', playtime_hours: 'Playtime Hours', games_played: 'Games Played',
-	wins: 'Wins', kills: 'Kills', deaths: 'Deaths', assists: 'Assists', damage: 'Damage', points: 'Points', healing: 'Heals',
+	maining: 'Maining',
+	best_kda: 'Best K/D/A',
+	best_dmg: 'Best Damage',
+	best_heals: 'Best Heals',	
+	hours_played: 'Hours Played',
+	total_playtime_hours: 'Playtime Hours',
+	highest_daily_streak: 'Daily Streak',
+	brokercoins_donated: 'Brokercoins Donated',
+	highest_win_streak: 'Best Win Streak',
+	total_kills: 'Total Kills',
+	total_deaths: 'Total Deaths',
+	total_assists: 'Total Assists',
+	total_wins: 'Total Wins',
+	total_dmg: 'Total Damage',
+	total_heals: 'Total Heals',
+	win_rate: 'Win Rate',
+	comp_status: 'Competitive Status',
+	joindate: 'Join Date',
+	endorsements_received: 'Endorsements Received',
+	endorsements_given: 'Endorsements Given',
+	mastery_level: 'Mastery Level',
+	playtime_hours: 'Playtime Hours',
+	games_played: 'Games Played',
+	wins: 'Wins',
+	kills: 'Kills',
+	deaths: 'Deaths',
+	assists: 'Assists',
+	damage: 'Damage',
+	points: 'Points',
+	healing: 'Heals',
+};
+const formatNumber = (value) => {
+	const numeric = Number(value);
+	return Number.isFinite(numeric) ? String(Number(numeric.toFixed(2))) : '0';
+};
+const formatTextHours = (value) => {
+	const text = String(value).trim();
+	return /\bhours?\b/i.test(text) ? text : `${text} hours`;
 };
 const formatStatValue = {
-	'Best Damage': (value) => `${Number(value) || 0} DMG`, 'Total Damage': (value) => `${Number(value) || 0} DMG`,
-	'Damage': (value) => `${Number(value) || 0} DMG`, 'Best Heals': (value) => `${Number(value) || 0} Healed`,
-	'Total Heals': (value) => `${Number(value) || 0} Healed`, 'Heals': (value) => `${Number(value) || 0} Healed`,
-	'Hours Played': (value) => `${Number(value) || 0} hours`, 'Playtime Hours': (value) => `${Number(value) || 0} hours`,
-	'Daily Streak': (value) => `${Number(value) || 	0} days`, 'Brokercoins Donated': (value) => `${Number(value) || 0} Donated`,
-	'Best Win Streak': (value) => `${Number(value) || 0} Wins`, 'Total Kills': (value) => `${Number(value) || 0} Kills`,
-	'Kills': (value) => `${Number(value) || 0} Kills`, 'Total Deaths': (value) => `${Number(value) || 0} Deaths`,
-	'Deaths': (value) => `${Number(value) || 0} Deaths`, 'Total Assists': (value) => `${Number(value) || 0} Assists`,
-	'Assists': (value) => `${Number(value) || 0} Assists`, 'Total Wins': (value) => `${Number(value) || 0} Wins`,
-	'Wins': (value) => `${Number(value) || 0} Wins`,
+	'Best Damage': (value) => `${formatNumber(value)} DMG`,
+	'Total Damage': (value) => `${formatNumber(value)} DMG`,
+	'Damage': (value) => `${formatNumber(value)} DMG`,
+	'Best Heals': (value) => `${formatNumber(value)} Healed`,
+	'Total Heals': (value) => `${formatNumber(value)} Healed`,
+	'Heals': (value) => `${formatNumber(value)} Healed`,
+	'Hours Played': (value) => `${String(value)} hours`,
+	'Playtime Hours': (value) => `${String(value)} hours`,
+	'Daily Streak': (value) => `${formatNumber(value)} days`,
+	'Brokercoins Donated': (value) => `${formatNumber(value)} Donated`,
+	'Best Win Streak': (value) => `${formatNumber(value)} Wins`,
+	'Total Kills': (value) => `${formatNumber(value)} Kills`,
+	'Kills': (value) => `${formatNumber(value)} Kills`,
+	'Total Deaths': (value) => `${formatNumber(value)} Deaths`,
+	'Deaths': (value) => `${formatNumber(value)} Deaths`,
+	'Total Assists': (value) => `${formatNumber(value)} Assists`,
+	'Assists': (value) => `${formatNumber(value)} Assists`,
+	'Total Wins': (value) => `${formatNumber(value)} Wins`,
+	'Wins': (value) => `${formatNumber(value)} Wins`,
 	'Win Rate': (value) => {
 		const numeric = Number(value);
 		if (!Number.isFinite(numeric)) return 'N/A';
 		const percentage = numeric > 1 ? numeric : numeric * 100;
-		return `${Math.round((percentage + Number.EPSILON) * 100) / 100}%`;
+		return `${formatNumber(percentage)}%`;
 	},
-	'Mastery Level': (value) => `Level ${Number(value) || 0}`, 'Games Played': (value) => `${Number(value) || 0} games`,
-	'Points': (value) => `${Number(value) || 0} points`, 'Best K/D/A': (value) => String(value || 'N/A'),
+	'Mastery Level': (value) => `Level ${formatNumber(value)}`,
+	'Games Played': (value) => `${formatNumber(value)} games`,
+	'Points': (value) => `${formatNumber(value)} points`,
+	'Best K/D/A': (value) => `${String(value) || 'N/A'}`,
 };
 const defaultStatIconAssets = {
-	'Hours Played': 'ASSETS_BADGE_SIDEKICK', 'Playtime Hours': 'ASSETS_BADGE_SIDEKICK',
-	'Daily Streak': 'ASSETS_BADGE_BULWARK', 'Best K/D/A': 'ASSETS_BADGE_PERFECTION',
-	'Best Damage': 'ASSETS_BADGE_BESERKER', 'Best Heals': 'ASSETS_BADGE_GUARDIAN',
-	'Best Win Streak': 'ASSETS_BADGE_UNSTOPPABLE', 'Brokercoins Donated': 'ASSETS_BROKERCOIN',
+	'Join Date': 'ping.hello',
+	'Playtime Hours': 'badge.sidekick',
+	'Daily Streak': 'badge.bulwark',
+	'Best K/D/A': 'badge.perfection',
+	'Best Damage': 'badge.beserker',
+	'Best Heals': 'badge.guardian',
+	'Best Win Streak': 'badge.unstoppable',
+	'Brokercoins Donated': 'brokercoin',
+	'Total Kills': 'badge.beserker',
+	'Total Deaths': 'badge.scourge',
+	'Total Assists': 'badge.sidekick'
 };
+
+function resolveAssetKey(assetKey) {
+	if (!assetKey) return null;
+	const [category, ...keyParts] = String(assetKey).split('.');
+	const key = keyParts.join('_').toUpperCase();
+	if (!category || !key) return null;
+	const assetName = category.toLowerCase() === 'badge'
+		? `ASSETS_BADGE_${key}`
+		: `ASSETS_${category.toUpperCase()}_${key}`;
+	return process.env[assetName] || null;
+}
 
 function resolveIconAsset(iconValue, statLabel, phighterName) {
 	if (iconValue === 'hidden') return null;
 	if (iconValue && iconValue !== 'default') {
 		if (/^https?:\/\//i.test(iconValue)) return iconValue;
-		const [category, ...keyParts] = String(iconValue).split('.');
-		const key = keyParts.join('_').toUpperCase();
-		if (category && key) {
-			const assetName = category.toLowerCase() === 'badge'
-				? `ASSETS_BADGE_${key}`
-				: `ASSETS_${category.toUpperCase()}_${key}`;
-			return process.env[assetName] || null;
-		}
-		return null;
+		return resolveAssetKey(iconValue);
 	}
 	if (phighterName) {
 		const assetName = `ASSETS_${phighterName.replace(/[^a-z0-9]/gi, '').toUpperCase()}_ICON`;
 		if (process.env[assetName]) return process.env[assetName];
 	}
-	return process.env[defaultStatIconAssets[statLabel]] || null;
+	return resolveAssetKey(defaultStatIconAssets[statLabel]);
+}
+
+function resolvePhighterAsset(assetKey, skinName = '') {
+	const key = skinName ? `${assetKey}.${skinName}` : assetKey;
+	const normalizedKey = key.toUpperCase();
+	return process.env[key]
+		|| process.env[normalizedKey]
+		|| process.env[`ASSETS_${normalizedKey}`]
+		|| (skinName && process.env[`ASSETS_${assetKey.toUpperCase()}_SKIN_${skinName.toUpperCase()}`])
+		|| process.env[`ASSETS_${assetKey.toUpperCase()}`]
+		|| null;
 }
 
 async function getFullName(discordId) {
@@ -107,10 +169,10 @@ async function syncUser(client, db, userData) {
 	if (userData.comp_status) dynamic.push({ type: 1, name: 'comp_status', value: userData.comp_status });
 
 	const phighterAssetMap = {
-		sword: 'ASSETS_SWORD', skateboard: 'ASSETS_SKATEBOARD', biograft: 'ASSETS_BIOGRAFT', katana: 'ASSETS_KATANA',
-		ban_hammer: 'ASSETS_BANHAMMER', rocket: 'ASSETS_ROCKET', slingshot: 'ASSETS_SLINGSHOT', hyperlaser: 'ASSETS_HYPERLASER',
-		shuriken: 'ASSETS_SHURIKEN', scythe: 'ASSETS_SCYTHE', medkit: 'ASSETS_MEDKIT', boombox: 'ASSETS_BOOMBOX',
-		subspace: 'ASSETS_SUBSPACE', vine_staff: 'ASSETS_VINESTAFF', coil: 'ASSETS_COIL',
+		sword: 'sword', skateboard: 'skateboard', biograft: 'biograft', katana: 'katana',
+		ban_hammer: 'banhammer', rocket: 'rocket', slingshot: 'slingshot', hyperlaser: 'hyperlaser',
+		shuriken: 'shuriken', scythe: 'scythe', medkit: 'medkit', boombox: 'boombox',
+		subspace: 'subspace', vine_staff: 'vinestaff', coil: 'coil',
 	};
 	const headerValue = userData.phighter_heroimg;
 	if (typeof headerValue === 'string') {
@@ -122,12 +184,10 @@ async function syncUser(client, db, userData) {
 				.sort((a, b) => b.length - a.length)
 				.find((name) => headerValue === name || headerValue.startsWith(`${name}_`));
 			if (matchedPhighter) {
-				const baseAssetName = phighterAssetMap[matchedPhighter];
+				const assetKey = phighterAssetMap[matchedPhighter];
 				const skinValue = headerValue.slice(matchedPhighter.length).replace(/^_/, '');
-				const skinName = skinValue.replace(/^skin_/, '').toUpperCase();
-				const skinAsset = process.env[`${baseAssetName}_${skinName || 'DEFAULT'}`]
-					|| (skinName && skinName !== 'DEFAULT' ? process.env[`${baseAssetName}_SKIN_${skinName}`] : null);
-				imgUrl = skinAsset || process.env[baseAssetName];
+				const skinName = skinValue.replace(/^skin_/, '');
+				imgUrl = resolvePhighterAsset(baseAssetKey, skinName === 'default' ? '' : skinName);
 			}
 		}
 		if (imgUrl) dynamic.push({ type: 3, name: 'phighter_header', value: { url: imgUrl } });

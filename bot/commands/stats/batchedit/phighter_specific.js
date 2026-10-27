@@ -7,10 +7,11 @@ const PHIGHTERS = [
 	'subspace', 'katana', 'shuriken', 'vine_staff', 'ban_hammer', 'scythe', 'coil'
 ];
 const HEALER_PHIGHTERS = new Set(['medkit', 'vine_staff', 'coil']);
+
 const PHIGHTER_STATS = [
 	['Mastery Level', 'mastery_level', 'integer', 'Your mastery level with this phighter'],
-	['Playtime Hours', 'playtime_hours', 'integer', 'Hours played with this phighter'],
-	['Games Played', 'games_played', 'integer', 'Number of games played with this phighter'],
+	['Playtime Hours', 'playtime_hours', 'string', 'Hours played with this phighter'],
+	['Games Played', 'games', 'integer', 'Number of games played with this phighter'],
 	['Win Rate', 'win_rate', 'string', 'Win rate percentage from 0 to 100'],
 	['Wins', 'wins', 'integer', 'Total wins with this phighter'],
 	['Kills', 'kills', 'integer', 'Total kills with this phighter'],
@@ -20,8 +21,9 @@ const PHIGHTER_STATS = [
 	['Points', 'points', 'integer', 'Total points earned with this phighter'],
 	['Best K/D/A', 'best_kda', 'string', 'Your best K/D/A ratio with this phighter'],
 	['Best Damage', 'best_dmg', 'integer', 'Your best damage dealt with this phighter'],
-	['Heals', 'heals', 'integer', 'Total healing done with this phighter'],
+	['Heals', 'healing', 'integer', 'Total healing done with this phighter'],
 	['Best Heals', 'best_heals', 'integer', 'Your best healing done with this phighter']
+	// You can add your custom stats here, but do remember that this has a limit of 25 total.
 ];
 
 const data = PHIGHTER_STATS.reduce((command, [, key, type, description]) => {

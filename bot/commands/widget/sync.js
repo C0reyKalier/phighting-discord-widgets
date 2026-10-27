@@ -11,6 +11,60 @@ const verboseLog = (...args) => {
 	if (verbose) console.log('[/widget sync]', ...args);
 };
 
+// Easy-to-configure lists
+const columnToDisplayMap = {
+	maining: 'Maining',
+	best_kda:'Best K/D/A',
+	best_dmg: 'Best Damage',
+	best_heals: 'Best Heals',
+	hours_played: 'Hours Played',
+	joindate: 'Join Date',
+	total_playtime_hours: 'Hours Played',
+	highest_daily_streak: 'Daily Streak',
+	brokercoins_donated: 'Brokercoins Donated',
+	highest_win_streak: 'Best Win Streak',
+	total_kills: 'Total Kills',
+	total_deaths: 'Total Deaths',
+	total_assists: 'Total Assists',
+	total_wins: 'Total Wins',
+	total_dmg: 'Total Damage',
+	total_heals: 'Total Heals',
+	win_rate: 'Win Rate',
+	comp_status: 'Competitive Status',
+	endorsements_received: 'Endorsements Received',
+	endorsements_given: 'Endorsements Given',
+	mastery_level: 'Mastery Level',
+	playtime_hours: 'Playtime Hours',
+	games_played: 'Games Played',
+	wins: 'Wins',
+	kills: 'Kills',
+	deaths: 'Deaths',
+	assists: 'Assists',
+	damage: 'Damage',
+	points: 'Points',
+	healing: 'Heals',
+};
+const defaultStatIconAssets = {
+	'Join Date': 'ping.hello',
+	'Playtime Hours': 'badge.sidekick',
+	'Daily Streak': 'badge.bulwark',
+	'Best K/D/A': 'badge.perfection',
+	'Best Damage': 'badge.beserker',
+	'Best Heals': 'badge.guardian',
+	'Best Win Streak': 'badge.unstoppable',
+	'Brokercoins Donated': 'brokercoin',
+	'Total Kills': 'badge.beserker',
+	'Total Deaths': 'badge.scourge',
+	'Total Assists': 'badge.sidekick',
+};
+const phighterAssetMap = {
+	sword: 'sword', skateboard: 'skateboard', biograft: 'biograft', katana: 'katana',
+	ban_hammer: 'banhammer', rocket: 'rocket', slingshot: 'slingshot', hyperlaser: 'hyperlaser',
+	shuriken: 'shuriken', scythe: 'scythe', medkit: 'medkit', boombox: 'boombox',
+	subspace: 'subspace', vine_staff: 'vinestaff', coil: 'coil',
+};
+const imageExtensions = ['.png', '.jpg', '.jpeg', '.webp', '.gif'];
+
 module.exports = {
 	data: new SlashCommandSubcommandBuilder()
 		.setName('sync')
@@ -61,38 +115,6 @@ module.exports = {
 			}
 
 			const normalizeDbKey = (value) => String(value ?? '').toLowerCase().replace(/[^a-z0-9]/g, '');
-			const columnToDisplayMap = {
-				maining: 'Maining',
-				best_kda: 'Best K/D/A',
-				best_dmg: 'Best Damage',
-				best_heals: 'Best Heals',
-				hours_played: 'Hours Played',
-				joindate: 'Join Date',
-				total_playtime_hours: 'Hours Played',
-				highest_daily_streak: 'Daily Streak',
-				brokercoins_donated: 'Brokercoins Donated',
-				highest_win_streak: 'Best Win Streak',
-				total_kills: 'Total Kills',
-				total_deaths: 'Total Deaths',
-				total_assists: 'Total Assists',
-				total_wins: 'Total Wins',
-				total_dmg: 'Total Damage',
-				total_heals: 'Total Heals',
-				win_rate: 'Win Rate',
-				comp_status: 'Competitive Status',
-				endorsements_received: 'Endorsements Received',
-				endorsements_given: 'Endorsements Given',
-				mastery_level: 'Mastery Level',
-				playtime_hours: 'Playtime Hours',
-				games_played: 'Games Played',
-				wins: 'Wins',
-				kills: 'Kills',
-				deaths: 'Deaths',
-				assists: 'Assists',
-				damage: 'Damage',
-				points: 'Points',
-				healing: 'Heals',
-			};
 			const formatNumber = (value) => {
 				const numeric = Number(value);
 				return Number.isFinite(numeric) ? String(Number(numeric.toFixed(2))) : '0';
@@ -108,8 +130,8 @@ module.exports = {
 				'Best Heals': (value) => `${formatNumber(value)} Healed`,
 				'Total Heals': (value) => `${formatNumber(value)} Healed`,
 				'Heals': (value) => `${formatNumber(value)} Healed`,
-				'Hours Played': (value) => `${formatNumber(value)} hours`,
-				'Playtime Hours': (value) => `${formatNumber(value)} hours`,
+				'Hours Played': (value) => `${String(value)} hours`,
+				'Playtime Hours': (value) => `${String(value)} hours`,
 				'Daily Streak': (value) => `${formatNumber(value)} days`,
 				'Brokercoins Donated': (value) => `${formatNumber(value)} Donated`,
 				'Best Win Streak': (value) => `${formatNumber(value)} Wins`,
@@ -132,19 +154,6 @@ module.exports = {
 				'Points': (value) => `${formatNumber(value)} points`,
 				'Best K/D/A': (value) => `${String(value) || "N/A"}`,
 			};
-			const defaultStatIconAssets = {
-				'Join Date': 'ASSETS_PING_HELLO',
-				'Playtime Hours': 'ASSETS_BADGE_SIDEKICK',
-				'Daily Streak': 'ASSETS_BADGE_BULWARK',
-				'Best K/D/A': 'ASSETS_BADGE_PERFECTION',
-				'Best Damage': 'ASSETS_BADGE_BESERKER',
-				'Best Heals': 'ASSETS_BADGE_GUARDIAN',
-				'Best Win Streak': 'ASSETS_BADGE_UNSTOPPABLE',
-				'Brokercoins Donated': 'ASSETS_BROKERCOIN',
-				'Total Kills': 'ASSETS_BADGE_BESERKER',
-				'Total Deaths': 'ASSETS_BADGE_SCOURGE',
-				'Total Assists': 'ASSETS_BADGE_SIDEKICK'
-			};
 			const resolveIconAsset = (iconValue, statLabel, phighterName) => {
 				if (iconValue === 'hidden') return null;
 				if (iconValue && iconValue !== 'default') {
@@ -164,6 +173,16 @@ module.exports = {
 					if (process.env[assetName]) return process.env[assetName];
 				}
 				return process.env[defaultStatIconAssets[statLabel]] || null;
+			};
+			const resolvePhighterAsset = (assetKey, skinName = '') => {
+				const key = skinName ? `${assetKey}.${skinName}` : assetKey;
+				const normalizedKey = key.toUpperCase();
+				return process.env[key]
+					|| process.env[normalizedKey]
+					|| process.env[`ASSETS_${normalizedKey}`]
+					|| (skinName && process.env[`ASSETS_${assetKey.toUpperCase()}_SKIN_${skinName.toUpperCase()}`])
+					|| process.env[`ASSETS_${assetKey.toUpperCase()}`]
+					|| null;
 			};
 
 			const resolveLayoutStat = (slotValue) => {
@@ -223,23 +242,6 @@ module.exports = {
 			db.close();
 
 			let imgUrl;
-			const phighterAssetMap = {
-				sword: 'ASSETS_SWORD',
-				skateboard: 'ASSETS_SKATEBOARD',
-				biograft: 'ASSETS_BIOGRAFT',
-				katana: 'ASSETS_KATANA',
-				ban_hammer: 'ASSETS_BANHAMMER',
-				rocket: 'ASSETS_ROCKET',
-				slingshot: 'ASSETS_SLINGSHOT',
-				hyperlaser: 'ASSETS_HYPERLASER',
-				shuriken: 'ASSETS_SHURIKEN',
-				scythe: 'ASSETS_SCYTHE',
-				medkit: 'ASSETS_MEDKIT',
-				boombox: 'ASSETS_BOOMBOX',
-				subspace: 'ASSETS_SUBSPACE',
-				vine_staff: 'ASSETS_VINESTAFF',
-				coil: 'ASSETS_COIL',
-			};
 			const headerValue = userData.phighter_heroimg;
 			if (typeof headerValue === 'string') {
 				if (/^https?:\/\//i.test(headerValue)) {
@@ -249,12 +251,10 @@ module.exports = {
 						.sort((a, b) => b.length - a.length)
 						.find((name) => headerValue === name || headerValue.startsWith(`${name}_`));
 					if (matchedPhighter) {
-						const baseAssetName = phighterAssetMap[matchedPhighter];
+						const assetKey = phighterAssetMap[matchedPhighter];
 						const skinValue = headerValue.slice(matchedPhighter.length).replace(/^_/, '');
-						const skinName = skinValue.replace(/^skin_/, '').toUpperCase();
-						const skinAsset = process.env[`${baseAssetName}_${skinName || 'DEFAULT'}`]
-							|| (skinName && skinName !== 'DEFAULT' ? process.env[`${baseAssetName}_SKIN_${skinName}`] : null);
-						imgUrl = skinAsset || process.env[baseAssetName];
+						const skinName = skinValue.replace(/^skin_/, '');
+						imgUrl = resolvePhighterAsset(assetKey, skinName);
 					}
 				}
 			}
@@ -262,7 +262,6 @@ module.exports = {
 			const assetsPath = path.join(__dirname, '..', '..', '..', 'assets');
 			verboseLog('Working directory:', process.cwd());
 			verboseLog('Assets directory:', assetsPath, 'exists:', fs.existsSync(assetsPath));
-			const imageExtensions = ['.png', '.jpg', '.jpeg', '.webp', '.gif'];
 			const resolveLocalAsset = (assetValue, fallbackName, directories = []) => {
 				const value = String(assetValue || fallbackName || '').trim();
 				if (!value) return null;
@@ -288,19 +287,18 @@ module.exports = {
 
 				const skinValue = headerValue.slice(phighterName.length).replace(/^_/, '').replace(/^skin_/, '');
 				const skinName = skinValue || 'default';
+				const assetKey = phighterAssetMap[phighterName];
 				const skinDirectory = path.join(assetsPath, 'phighters_skins', phighterName);
 				const portraitDirectory = path.join(assetsPath, 'phighters_portraits');
 				const names = skinName.toLowerCase() === 'default'
 					? [
-						`${phighterName}.default`,
-						`${phighterName}_default`,
+						assetKey,
 						phighterName,
 					]
 					: [
+						`${assetKey}.${skinName}`,
 						headerValue,
 						`${phighterName}_skin_${skinName}`,
-						`${phighterName}.${skinName}`,
-						`${phighterName}_${skinName}`,
 						skinName,
 					];
 				for (const name of names) {
