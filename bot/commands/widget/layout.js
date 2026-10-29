@@ -165,7 +165,8 @@ module.exports = {
 					components: [makeMenu('layout_select_skin', 'Select a skin', makeOptions(skinOptions))]
 				});
 				const skinSelection = await waitForSelection(interaction, 'layout_select_skin');
-				const phighterHeaderValue = `${selectedPhighter}_${skinSelection.values[0]}`;
+				const phighterHeaderValue = `${selectedPhighter}.${skinSelection.values[0]}`;
+				const skinName = skinOptions.find(([, value]) => value === skinSelection.values[0])[0];
 				const db = new Database(path.join(__dirname, '..', '..', 'user_database.db'));
 				try {
 					const userStatsExists = db.prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'user_stats'").get();
@@ -180,7 +181,7 @@ module.exports = {
 						db.prepare('INSERT INTO user_stats (discord_id, phighter_heroimg) VALUES (?, ?)')
 							.run(interaction.user.id, phighterHeaderValue);
 					}
-					await skinSelection.update({ content: `The header image is set to **${phighterHeaderValue}**.`, components: [] });
+					await skinSelection.update({ content: `The header image is set to **${skinName}**.`, components: [] });
 					verboseLog('Phighter header image saved.');
 				} finally {
 					db.close();

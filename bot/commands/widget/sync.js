@@ -462,6 +462,7 @@ module.exports = {
 				if (userData.title) dynamicData.push({ type: 1, name: 'title', value: userData.title });
 				if (userData.level !== null) dynamicData.push({ type: 1, name: 'level', value: `Level ${userData.level}` });
 				if (userData.comp_status) dynamicData.push({ type: 1, name: 'comp_status', value: userData.comp_status });
+				if (userData.comp_badge) dynamicData.push({ type: 3, name: 'comp_status_icon', value: { url: userData.comp_badge } });
 
 				for (let i = 1; i <= 6; i++) {
 					const statLabel = statsDisplay[`stats_${i}`];

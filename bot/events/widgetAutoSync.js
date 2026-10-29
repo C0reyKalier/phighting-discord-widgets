@@ -167,6 +167,7 @@ async function syncUser(client, db, userData) {
 	if (userData.title) dynamic.push({ type: 1, name: 'title', value: userData.title });
 	if (userData.level !== null && userData.level !== undefined) dynamic.push({ type: 1, name: 'level', value: `Level ${userData.level}` });
 	if (userData.comp_status) dynamic.push({ type: 1, name: 'comp_status', value: userData.comp_status });
+	if (userData.comp_badge) dynamic.push({ type: 3, name: 'comp_status_icon', value: { url: userData.comp_badge }});
 
 	const phighterAssetMap = {
 		sword: 'sword', skateboard: 'skateboard', biograft: 'biograft', katana: 'katana',

@@ -85,6 +85,7 @@ module.exports = {
                         title TEXT,
                         level INTEGER,
                         comp_status TEXT,
+                        comp_badge TEXT,
                         joindate TEXT,
                         maining TEXT,
                         brokercoins_donated INTEGER,
