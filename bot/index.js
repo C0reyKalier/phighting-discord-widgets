@@ -4,6 +4,22 @@ require('dotenv').config();
 require('dotenv').config({ path: path.join(__dirname, 'assets.env') });
 const { Client, Collection, Events, GatewayIntentBits, MessageFlags } = require('discord.js');
 
+if (process.env.VERBOSE === 'TRUE') {
+    const logsPath = path.join(__dirname, 'logs');
+    fs.mkdirSync(logsPath, { recursive: true });
+    const logFile = path.join(logsPath, `${new Date().toISOString().replace(/[:.]/g, '-')}.log`);
+
+    for (const method of ['log', 'info', 'warn', 'error']) {
+        const original = console[method];
+        console[method] = (...args) => {
+            const timestamp = new Date().toISOString();
+            const message = args.map(arg => arg instanceof Error ? `${arg.stack || arg.message}` : typeof arg === 'string' ? arg : JSON.stringify(arg)).join(' ');
+            fs.appendFileSync(logFile, `[${timestamp}] [${method.toUpperCase()}] ${message}\n`);
+            original(...args);
+        };
+    }
+}
+
 const client = new Client({
     intents: [GatewayIntentBits.Guilds]
 });
