@@ -39,10 +39,6 @@ const formatNumber = (value) => {
 	const numeric = Number(value);
 	return Number.isFinite(numeric) ? String(Number(numeric.toFixed(2))) : '0';
 };
-const formatTextHours = (value) => {
-	const text = String(value).trim();
-	return /\bhours?\b/i.test(text) ? text : `${text} hours`;
-};
 const formatStatValue = {
 	'Best Damage': (value) => `${formatNumber(value)} DMG`,
 	'Total Damage': (value) => `${formatNumber(value)} DMG`,
@@ -144,17 +140,17 @@ function resolveLayoutStat(db, userData, discordId, slotValue) {
 	const sourceTable = rawTable === 'user_stats' || rawTable === 'general' || parts.length <= 1
 		? 'user_stats'
 		: `${rawTable}_stats`;
-	let row = userData;
-	if (sourceTable !== 'user_stats') {
-		if (!db.prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?").get(sourceTable)) return null;
-		const quotedTable = `"${sourceTable.replace(/"/g, '""')}"`;
-		row = db.prepare(`SELECT * FROM ${quotedTable} WHERE discord_id = ?`).get(discordId);
-	}
-	if (!row || row[columnName] === undefined || row[columnName] === null) return null;
 	const phighterName = sourceTable === 'user_stats'
 		? null
 		: sourceTable.replace(/_stats$/, '').replace(/_/g, ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
-	return { columnName, value: row[columnName], phighterName };
+	let row = userData;
+	if (sourceTable !== 'user_stats') {
+		const tableExists = db.prepare("SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ?").get(sourceTable);
+		if (!tableExists) return { columnName, value: null, phighterName };
+		const quotedTable = `"${sourceTable.replace(/"/g, '""')}"`;
+		row = db.prepare(`SELECT * FROM ${quotedTable} WHERE discord_id = ?`).get(discordId);
+	}
+	return { columnName, value: row?.[columnName] ?? null, phighterName };
 }
 
 async function syncUser(client, db, userData) {
@@ -183,12 +179,13 @@ async function syncUser(client, db, userData) {
 		} else {
 			const matchedPhighter = Object.keys(phighterAssetMap)
 				.sort((a, b) => b.length - a.length)
-				.find((name) => headerValue === name || headerValue.startsWith(`${name}_`));
+				.find((name) => headerValue === name || headerValue.startsWith(`${name}.`));
 			if (matchedPhighter) {
 				const assetKey = phighterAssetMap[matchedPhighter];
-				const skinValue = headerValue.slice(matchedPhighter.length).replace(/^_/, '');
-				const skinName = skinValue.replace(/^skin_/, '');
-				imgUrl = resolvePhighterAsset(baseAssetKey, skinName === 'default' ? '' : skinName);
+				const skinValue = headerValue.slice(matchedPhighter.length)
+					.replace(/^[_\.]/, '')
+					.replace(/^skin[_\.]/, '');
+				imgUrl = resolvePhighterAsset(assetKey, skinValue && skinValue !== 'default' ? skinValue : '');
 			}
 		}
 		if (imgUrl) dynamic.push({ type: 3, name: 'phighter_header', value: { url: imgUrl } });

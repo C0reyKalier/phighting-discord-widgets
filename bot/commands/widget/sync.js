@@ -44,6 +44,7 @@ const columnToDisplayMap = {
 	points: 'Points',
 	healing: 'Heals',
 };
+
 const defaultStatIconAssets = {
 	'Join Date': 'ping.hello',
 	'Playtime Hours': 'badge.sidekick',
@@ -55,8 +56,9 @@ const defaultStatIconAssets = {
 	'Brokercoins Donated': 'brokercoin',
 	'Total Kills': 'badge.beserker',
 	'Total Deaths': 'badge.scourge',
-	'Total Assists': 'badge.sidekick',
+	'Total Assists': 'badge.sidekick'
 };
+
 const phighterAssetMap = {
 	sword: 'sword', skateboard: 'skateboard', biograft: 'biograft', katana: 'katana',
 	ban_hammer: 'banhammer', rocket: 'rocket', slingshot: 'slingshot', hyperlaser: 'hyperlaser',
@@ -154,25 +156,27 @@ module.exports = {
 				'Points': (value) => `${formatNumber(value)} points`,
 				'Best K/D/A': (value) => `${String(value) || "N/A"}`,
 			};
+			const resolveAssetKey = (assetKey) => {
+				if (!assetKey) return null;
+				const [category, ...keyParts] = String(assetKey).split('.');
+				const key = keyParts.join('_').toUpperCase();
+				if (!category || !key) return null;
+				const assetName = category.toLowerCase() === 'badge'
+					? `ASSETS_BADGE_${key}`
+					: `ASSETS_${category.toUpperCase()}_${key}`;
+				return process.env[assetName] || null;
+			};
 			const resolveIconAsset = (iconValue, statLabel, phighterName) => {
 				if (iconValue === 'hidden') return null;
 				if (iconValue && iconValue !== 'default') {
 					if (/^https?:\/\//i.test(iconValue)) return iconValue;
-					const [category, ...keyParts] = String(iconValue).split('.');
-					const key = keyParts.join('_').toUpperCase();
-					if (category && key) {
-						const assetName = category.toLowerCase() === 'badge'
-							? `ASSETS_BADGE_${key}`
-							: `ASSETS_${category.toUpperCase()}_${key}`;
-						return process.env[assetName] || null;
-					}
-					return null;
+					return resolveAssetKey(iconValue);
 				}
 				if (phighterName) {
 					const assetName = `ASSETS_${phighterName.replace(/[^a-z0-9]/gi, '').toUpperCase()}_ICON`;
 					if (process.env[assetName]) return process.env[assetName];
 				}
-				return process.env[defaultStatIconAssets[statLabel]] || null;
+				return resolveAssetKey(defaultStatIconAssets[statLabel]);
 			};
 			const resolvePhighterAsset = (assetKey, skinName = '') => {
 				const key = skinName ? `${assetKey}.${skinName}` : assetKey;
@@ -249,12 +253,12 @@ module.exports = {
 				} else {
 					const matchedPhighter = Object.keys(phighterAssetMap)
 						.sort((a, b) => b.length - a.length)
-						.find((name) => headerValue === name || headerValue.startsWith(`${name}_`));
+						.find((name) => headerValue === name || headerValue.startsWith(`${name}_`) || headerValue.startsWith(`${name}.`));
 					if (matchedPhighter) {
 						const assetKey = phighterAssetMap[matchedPhighter];
-						const skinValue = headerValue.slice(matchedPhighter.length).replace(/^_/, '');
-						const skinName = skinValue.replace(/^skin_/, '');
-						imgUrl = resolvePhighterAsset(assetKey, skinName);
+						const skinValue = headerValue.slice(matchedPhighter.length).replace(/^[_\.]/, '');
+						const skinName = skinValue.replace(/^skin[_\.]/, '');
+						imgUrl = resolvePhighterAsset(assetKey, skinName.toLowerCase() === 'default' ? '' : skinName);
 					}
 				}
 			}
@@ -281,11 +285,11 @@ module.exports = {
 
 			const phighterName = Object.keys(phighterAssetMap)
 				.sort((a, b) => b.length - a.length)
-				.find((name) => typeof headerValue === 'string' && (headerValue === name || headerValue.startsWith(`${name}_`)));
+				.find((name) => typeof headerValue === 'string' && (headerValue === name || headerValue.startsWith(`${name}_`) || headerValue.startsWith(`${name}.`)));
 			const localHero = (() => {
 				if (!phighterName) return resolveLocalAsset(headerValue);
 
-				const skinValue = headerValue.slice(phighterName.length).replace(/^_/, '').replace(/^skin_/, '');
+				const skinValue = headerValue.slice(phighterName.length).replace(/^[_\.]/, '').replace(/^skin[_\.]/, '');
 				const skinName = skinValue || 'default';
 				const assetKey = phighterAssetMap[phighterName];
 				const skinDirectory = path.join(assetsPath, 'phighters_skins', phighterName);
