@@ -1,6 +1,6 @@
 # PHIGHTING! x Discord (Unofficial) Widget Integration
 
-A project implementing your (unofficial) PHIGHTING! stats to your Discord profile! Currently in heavy W.I.P
+A project implementing your (unofficial) PHIGHTING! stats to your Discord profile using Discord's Game Widget experiment.
 
 ![Widget preview](widget-preview.png)
 
@@ -15,8 +15,7 @@ A project implementing your (unofficial) PHIGHTING! stats to your Discord profil
 ## Planned features & TODO:
 
 - [x] More comprehensive and friendly guide to set up **[PRIORITY]**
-- [ ] Polished UX for the Discord Bot **[PRIORITY]**
-- [ ] Support for the second type of the Widget (4 featured images) **[PRIORITY]**
+- [x] Polished UX for the Discord Bot **[PRIORITY]**
 - [ ] Standalone (Win32) program for Windows
 - [ ] Add Android support via Termux using dialog and curl
 
@@ -28,6 +27,7 @@ A project implementing your (unofficial) PHIGHTING! stats to your Discord profil
 - A Discord server with Bloxlink configured, along with the API key set up
 - A little bit of knowledge about tech
 - **(Optional)** Docker if you are deploying to a server
+- **(Optional)** 2-Factor-Authentication enabled for your account (if you are planning to share it with your friends)
 
 ---
 
@@ -42,7 +42,10 @@ Head over to the [GitHub Wiki page](https://github.com/C0reyKalier/phighting-dis
 | Command | Description |
 |---|---|
 | `/widget setup` | Authorize the application on your discord account |
-| `/stats_widget edit` | Edit your stats |
-| `/widget apply` | Shows a guide to apply your widget to your profile (Requires a web browser/Vencord with DevTools enabled) |
+| `/widget apply` | Shows a guide to apply your widget to your profile (Requires a desktop web browser/Vencord with DevTools enabled) |
+| `/widget layout` | Edit the layout of your widget to your choosing |
+| `/widget sync` | Syncs your widget to your Discord profile |
+| `/stats edit` | Edit your stats one-by-one using an interactive menu |
+| `/stats batchedit [general/phighter]` | Edit your stats in batch using Discord slash commands |
 
 ---
