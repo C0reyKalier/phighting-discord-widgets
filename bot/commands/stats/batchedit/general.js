@@ -95,7 +95,10 @@ async function execute(interaction) {
 			return;
 		}
 		const applyUpdates = db.transaction(() => {
-			db.prepare('INSERT OR IGNORE INTO user_stats (discord_id) VALUES (?)').run(interaction.user.id);
+			const userExists = db.prepare('SELECT 1 FROM user_stats WHERE discord_id = ?').get(interaction.user.id);
+			if (!userExists) {
+				db.prepare('INSERT INTO user_stats (discord_id) VALUES (?)').run(interaction.user.id);
+			}
 			for (const [key, value] of updates) {
 				db.prepare(`UPDATE user_stats SET "${key}" = ? WHERE discord_id = ?`).run(value, interaction.user.id);
 			}

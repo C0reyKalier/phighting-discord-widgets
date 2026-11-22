@@ -101,7 +101,10 @@ async function execute(interaction) {
 		}
 
 		const applyUpdates = db.transaction(() => {
-			db.prepare(`INSERT OR IGNORE INTO "${tableName}" (discord_id) VALUES (?)`).run(interaction.user.id);
+			const userExists = db.prepare(`SELECT 1 FROM "${tableName}" WHERE discord_id = ?`).get(interaction.user.id);
+			if (!userExists) {
+				db.prepare(`INSERT INTO "${tableName}" (discord_id) VALUES (?)`).run(interaction.user.id);
+			}
 			for (const [key, value] of updates) {
 				db.prepare(`UPDATE "${tableName}" SET "${key}" = ? WHERE discord_id = ?`).run(value, interaction.user.id);
 			}

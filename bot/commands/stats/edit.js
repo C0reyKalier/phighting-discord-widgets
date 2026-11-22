@@ -122,6 +122,10 @@ async function execute(interaction) {
 			targetTable = `${phighterInteraction.values[0]}_stats`;
 			const statsDb = new Database(dbPath, databaseOptions);
 			try {
+				const userExists = statsDb.prepare(`SELECT 1 FROM "${targetTable}" WHERE discord_id = ?`).get(discordId);
+				if (!userExists) {
+					statsDb.prepare(`INSERT INTO "${targetTable}" (discord_id) VALUES (?)`).run(discordId);
+				}
 				const columns = statsDb.prepare(`PRAGMA table_info("${targetTable}")`).all()
 					.filter(column => column.name !== 'discord_id');
 				const normalizedColumns = new Map(columns.map(column => [
